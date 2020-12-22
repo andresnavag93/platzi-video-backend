@@ -1,32 +1,38 @@
+/**
+ * recursos:
+ * https://github.com/uokesita/the-little-mongodb-book/blob/master/es/mongodb.markdown
+ * https://docs.mongodb.com/manual/crud/
+ * https://docs.mongodb.com/manual/reference/method/js-collection/
+ */
 const { MongoClient, ObjectId } = require('mongodb');
+
 const { config } = require('../config');
 
 const USER = encodeURIComponent(config.dbUser);
 const PASSWORD = encodeURIComponent(config.dbPassword);
 const DB_NAME = config.dbName;
 
-const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}:${config.dbPort}/${DB_NAME}?retryWrites=true&w=majority`;
+const MONGO_URI = `mongodb+srv://${USER}:${PASSWORD}@${config.dbHost}/${DB_NAME}?retryWrites=true&w=majority`;
 
 class MongoLib {
   constructor() {
-    this.client = new MongoClient(MONGO_URI, { useNewUrlParser: true });
+    this.client = new MongoClient(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     this.dbName = DB_NAME;
   }
-
   connect() {
     if (!MongoLib.connection) {
       MongoLib.connection = new Promise((resolve, reject) => {
         this.client.connect((err) => {
-          if (err) {
-            reject(err);
-          }
+          if (err) reject(err);
 
-          console.log('Connected succesfully to mongo');
+          console.log('Connected succesfully to mongo db');
           resolve(this.client.db(this.dbName));
         });
       });
     }
-
     return MongoLib.connection;
   }
 
@@ -35,13 +41,11 @@ class MongoLib {
       return db.collection(collection).find(query).toArray();
     });
   }
-
   get(collection, id) {
     return this.connect().then((db) => {
       return db.collection(collection).findOne({ _id: ObjectId(id) });
     });
   }
-
   create(collection, data) {
     return this.connect()
       .then((db) => {
@@ -49,7 +53,6 @@ class MongoLib {
       })
       .then((result) => result.insertedId);
   }
-
   update(collection, id, data) {
     return this.connect()
       .then((db) => {
@@ -57,15 +60,16 @@ class MongoLib {
           .collection(collection)
           .updateOne({ _id: ObjectId(id) }, { $set: data }, { upsert: true });
       })
-      .then((result) => result.upsertedId || id);
+      .then((result) => result.upsertId || id);
   }
-
   delete(collection, id) {
+    console.log(collection, id);
     return this.connect()
       .then((db) => {
         return db.collection(collection).deleteOne({ _id: ObjectId(id) });
       })
-      .then(() => id);
+      .then(() => id)
+      .catch((e) => e);
   }
 }
 
