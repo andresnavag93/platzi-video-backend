@@ -7,6 +7,7 @@ class MoviesService {
     this.mongoDB = new MongoLib();
   }
   async getMovies({ tags } = {}) {
+    throw new Error('Error getting movies');
     const query = tags && { tags: { $in: tags } };
     const movies = await this.mongoDB.getAll(this.collection, query);
     return movies || [];
