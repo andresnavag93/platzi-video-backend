@@ -1,5 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+app.use(cors());
+// Recomendado para produccion
+// const corsOptions = { origin: "http://example.com" };
+// app.use(cors(corsOptions));
 
 const { config } = require('./config/index');
 const moviesApi = require('./routes/movies.js');
