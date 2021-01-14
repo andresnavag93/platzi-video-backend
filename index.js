@@ -1,14 +1,9 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
-
-app.use(cors());
-// Recomendado para produccion
-// const corsOptions = { origin: "http://example.com" };
-// app.use(cors(corsOptions));
 
 const { config } = require('./config/index');
 const moviesApi = require('./routes/movies.js');
+const userMoviesApi = require('./routes/userMovies.js');
 
 const {
   logErrors,
@@ -23,6 +18,7 @@ app.use(express.json());
 
 // routes
 moviesApi(app);
+userMoviesApi(app);
 
 // Catch 404
 app.use(notFoundHandler);
