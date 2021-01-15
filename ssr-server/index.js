@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const passport = require('passport');
 const boom = require('@hapi/boom');
 const cookieParser = require('cookie-parser');
@@ -11,18 +12,19 @@ const app = express();
 // body parser
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet());
 
 //  Basic strategy
 require('./utils/auth/strategies/basic');
 
 // Time variables
-//const THIRTY_DAYS_IN_SEC = 2592000;
-//const TWO_HOURS_IN_SEC = 7200;
+const THIRTY_DAYS_IN_SEC = 2592000;
+const TWO_HOURS_IN_SEC = 7200;
 
 app.post('/auth/sign-in', async function (req, res, next) {
   // We obtain attribute rememberMe in the body request
-  //const { rememberMe } = req.body;
-  //console.log(rememberMe);
+  const { rememberMe } = req.body;
+  console.log(rememberMe);
 
   passport.authenticate('basic', function (error, data) {
     try {
@@ -40,8 +42,8 @@ app.post('/auth/sign-in', async function (req, res, next) {
         res.cookie('token', token, {
           httpOnly: !config.dev,
           secure: !config.dev,
+          maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
         });
-        //maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
 
         res.status(200).json(user);
       });
