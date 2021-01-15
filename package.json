@@ -4,7 +4,8 @@
   "description": "Backend for platzi video",
   "main": "index.js",
   "scripts": {
-    "dev": "DEBUG=express:*,app:* nodemon index",
+    "dev": "nodemon index",
+    "ssr": "nodemon ssr-server/index.js",
     "debug": "DEBUG=express:*,app:* npm run start",
     "inspect": "DEBUG=express:*,app:* nodemon --inspect index",
     "start": "NODE_ENV=production node index",

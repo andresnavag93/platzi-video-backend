@@ -7,4 +7,6 @@ const config = {
   apiKeyToken: process.env.API_KEY_TOKEN,
 };
 
+console.log(config);
+
 module.exports = { config: config };
