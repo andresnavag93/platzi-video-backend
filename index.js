@@ -1,14 +1,12 @@
 const express = require('express');
-const cors = require('cors');
+const helmet = require('helmet');
 const app = express();
 
-app.use(cors());
-// Recomendado para produccion
-// const corsOptions = { origin: "http://example.com" };
-// app.use(cors(corsOptions));
-
 const { config } = require('./config/index');
+
+const authApi = require('./routes/auth');
 const moviesApi = require('./routes/movies.js');
+const userMoviesApi = require('./routes/userMovies.js');
 
 const {
   logErrors,
@@ -20,9 +18,12 @@ const notFoundHandler = require('./utils/middleware/notFoundHandler');
 
 // body parser
 app.use(express.json());
+app.use(helmet());
 
 // routes
+authApi(app);
 moviesApi(app);
+userMoviesApi(app);
 
 // Catch 404
 app.use(notFoundHandler);
